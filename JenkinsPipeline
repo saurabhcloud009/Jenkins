@@ -1,0 +1,43 @@
+
+pipeline {
+    agent any
+
+    stages {
+        stage('Pull') {
+            steps {
+                git 'https://github.com/gabrielf/maven-samples.git'
+            }
+        }
+        
+       stage ('Initialize and Build') {
+            steps {
+                sh '''export M2_HOME=/var/jenkins_home/apache-maven-3.5.3
+                      export PATH=${M2_HOME}/bin:${PATH}
+                       mvn -Dmaven.test.failure.ignore=true install'''
+            }
+        }
+
+
+
+            
+        stage('Test') {
+            steps {
+                echo 'Testing..'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                sh '''curl -v -u admin:admin123 --upload-file /var/jenkins_home/workspace/Pipeline123/multi-module/webapp/target/webapp.war  http://nexus:8081/repository/maven-snapshots/
+'''
+            }
+        }
+        
+        stage('Promote') {
+            steps {
+                echo 'Promote....'
+            }
+        }
+    }
+}
+
+
